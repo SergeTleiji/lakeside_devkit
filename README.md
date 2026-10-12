@@ -307,7 +307,53 @@ Prediction JSON format:
   ]
 }
 ```
+## LiDAR odometry example with KISS-ICP
 
+This example was tested on the **201210 on-foot survey (10 December 2020)** using **KISS-ICP 1.3.0**. It processes the released PCD scans directly, using LiDAR geometry and the default KISS-ICP configuration.
+
+### Prepare the data
+
+Download the LiDAR ZIP package for the **201210 on-foot survey** from the [dataset website](https://dream.georgiatech-metz.fr/datasets/backpack/index.html) and extract the individual PCD scans into a directory. The directory used for this run was:
+
+```text
+/home/gchahine/Downloads/201210/201210
+```
+
+The path passed to the pipeline should point to the directory containing the individual `.pcd` files.
+
+### Install and run
+
+Install the tested KISS-ICP version and Open3D, which is used to load the PCD files:
+
+```bash
+pip install kiss-icp==1.3.0 open3d
+kiss_icp_pipeline --version
+```
+
+The version command should report:
+
+```text
+KISS-ICP Version: 1.3.0
+```
+
+Run the pipeline with visualization enabled:
+
+```bash
+kiss_icp_pipeline --visualize \
+  /home/gchahine/Downloads/201210/201210
+```
+
+Replace the path with the location of your extracted PCD files. This run uses the default configuration; no custom configuration file is required.
+
+### Expected output
+
+The visualization shows the registered LiDAR point clouds and the estimated trajectory. After processing, the pipeline exports the estimated poses and the run configuration to its results directory.
+
+A recording of the successful run is available here: [KISS-ICP on the 201210 on-foot survey](https://youtu.be/p5gHWgLPDhA).
+
+The recording provides a qualitative illustration of the estimated trajectory and point-cloud registration.
+
+For implementation details, see the [KISS-ICP repository](https://github.com/PRBonn/kiss-icp).
 ## Notes
 
 LiDAR filenames and `Imu.csv` rows use Unix timestamps, so LiDAR-to-metrics
