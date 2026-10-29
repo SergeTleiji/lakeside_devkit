@@ -103,6 +103,57 @@ or camera subfolders:
 200803_on-foot_cam2/cam2_downsampled
 ```
 
+## Comparing KISS-ICP with RTK
+
+The devkit provides `scripts/compare_kiss_icp_rtk.py` to compare a KISS-ICP trajectory with the corresponding RTK measurements.
+
+Run the following commands from the root of the `lakeside_devkit` repository, with your Python environment activated.
+
+### 1. Install KISS-ICP
+
+Install KISS-ICP version 1.3.0 with its optional dependencies for visualization and dataset loading:
+
+```bash
+python3 -m pip install "kiss-icp[all]==1.3.0"
+```
+
+### 2. Generate the LiDAR odometry trajectory
+
+Run KISS-ICP on the sequence's PCD directory:
+
+```bash
+kiss_icp_pipeline --visualize DATA/201210_on-foot_lidar/201210/
+```
+
+Visualization is optional; omit `--visualize` to run without the graphical interface.
+
+After the run completes, the trajectory used in this example is available at:
+
+```text
+results/latest/201210_poses_tum.txt
+```
+
+### 3. Compare the trajectory with RTK measurements
+
+Run the comparison using the generated trajectory, the same PCD directory, and the corresponding `Imu.csv` file:
+
+```bash
+python3 scripts/compare_kiss_icp_rtk.py \
+    --skip-rtk-status-2 \
+    --icp results/latest/201210_poses_tum.txt \
+    --pcd-dir DATA/201210_on-foot_lidar/201210/ \
+    --rtk DATA/allmetrics/201210_on-foot_metrics/201210/Imu.csv \
+    --rtk-time-column timestamp \
+    --output-dir . \
+    --segment-m 50 \
+    --sample-interval 1 \
+    --rtk-fix-rate 5
+```
+
+This example excludes RTK status 2 measurements and writes the comparison outputs to the current directory.
+
+For another sequence, update the trajectory, PCD, and RTK paths together. `results/latest` refers to the most recent KISS-ICP run.
+
 ## Example Usage
 
 ```python
